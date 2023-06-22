@@ -13,6 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,20 +119,23 @@ public class MainActivity extends AppCompatActivity implements View.OnDragListen
         imageView.draw(canvas);
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
 
-        rows = cols = (int) Math.sqrt(numOfPart);
-        chunkHeight = bitmap.getHeight() / rows;
-        chunkWidth = bitmap.getWidth() / cols;
+        rows = cols = (int) Math.sqrt(numOfPart);//3
+        chunkHeight = bitmap.getHeight() / rows;//15/3=5
+        chunkWidth = bitmap.getWidth() / cols;//15/3=5
 
         int yCoord = 0;
         int i = 0;
         for (int x = 0; x < rows; x++) {
-            int xCorod = 0;
-            for (int y = 0; y < cols; y++) {
-                chunkedImages.add(new Pictures(Bitmap.createBitmap(scaledBitmap, xCorod, yCoord, chunkWidth, chunkHeight), i));
-                i++;
-                xCorod += chunkWidth;
+            int xCorod = 0;//0
+            for (int y = 0; y < cols; y++)
+            {
+                //Pictures pic=new Pictures(Bitmap.createBitmap(scaledBitmap, xCorod, yCoord, chunkWidth, chunkHeight), i);
+                Pictures pictures=new Pictures(Bitmap.createBitmap(scaledBitmap,xCorod,yCoord,chunkWidth,chunkHeight),i);
+                chunkedImages.add(pictures);//1,2,3
+                i++;//1,2,3
+                xCorod += chunkWidth;//250,500,750
             }
-            yCoord += chunkHeight;
+            yCoord += chunkHeight;//250
         }
 
         imgList.addAll(chunkedImages);
@@ -150,34 +154,39 @@ public class MainActivity extends AppCompatActivity implements View.OnDragListen
     public boolean onDrag(View view, DragEvent dragEvent) {
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
+                Log.d("UUU", "onDrag: Started..");
+            case DragEvent.ACTION_DRAG_LOCATION:
+                Log.d("UUU", "onDrag: Location..");
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
-                view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-                view.invalidate();
-                return true;
-
-            case DragEvent.ACTION_DRAG_LOCATION:
+                Log.d("UUU", "onDrag: DragEntered");
+                //view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                //view.invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
-                view.getBackground().clearColorFilter();
-                view.invalidate();
+                Log.d("UUU", "onDrag: DragExited");
+                //view.getBackground().clearColorFilter();
+                //view.invalidate();
                 return true;
 
             case DragEvent.ACTION_DROP:
-                view.getBackground().clearColorFilter();
-                view.invalidate();
+                Log.d("UUU", "onDrag: Dropped");
+                //view.getBackground().clearColorFilter();
+                //view.invalidate();
 
                 LinearLayout layout = (LinearLayout) view;
-                if (layout.getChildCount() == 0) {
-                    View vw = (View) dragEvent.getLocalState();
-                    ViewGroup group = (ViewGroup) vw.getParent();
-                    group.removeView(vw);
-                    group.setVisibility(View.GONE);
-                    layout.addView(vw);
-                    vw.setVisibility(View.VISIBLE);
-                } else {
+                Log.d("CCC", "Child Count="+layout.getChildCount());
+//                if (layout.getChildCount() == 0)
+//                {
+//                    View vw = (View) dragEvent.getLocalState();
+//                    ViewGroup group = (ViewGroup) vw.getParent();
+//                    group.removeView(vw);
+//                    group.setVisibility(View.GONE);
+//                    layout.addView(vw);
+//                    vw.setVisibility(View.VISIBLE);
+//                } else {
                     try {
                         View vw = (View) dragEvent.getLocalState();
                         ViewGroup group = (ViewGroup) vw.getParent();
@@ -190,14 +199,15 @@ public class MainActivity extends AppCompatActivity implements View.OnDragListen
                         vw2.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
+//                    }
                 }
                 checkWin();
                 return true;
 
             case DragEvent.ACTION_DRAG_ENDED:
-                view.getBackground().clearColorFilter();
-                view.invalidate();
+                Log.d("UUU", "onDrag: Ended..");
+                //view.getBackground().clearColorFilter();
+                //view.invalidate();
                 return true;
 
             default:
@@ -210,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements View.OnDragListen
     public boolean onLongClick(View view) {
         ClipData.Item item = new ClipData.Item((CharSequence) view.getTag());
         String[] mimeType = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+
         ClipData data = new ClipData(view.getTag().toString(), mimeType, item);
         View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
         view.startDrag(data, shadowBuilder, view, 0);

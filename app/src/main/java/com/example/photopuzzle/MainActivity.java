@@ -118,15 +118,16 @@ public class MainActivity extends AppCompatActivity implements View.OnDragListen
         imageView.draw(canvas);
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
 
-        rows = cols = (int) Math.sqrt(numOfPart);
-        chunkHeight = bitmap.getHeight() / rows;
-        chunkWidth = bitmap.getWidth() / cols;
+        rows = cols = (int) Math.sqrt(numOfPart);//3
+        chunkHeight = bitmap.getHeight() / rows;//15/3=5
+        chunkWidth = bitmap.getWidth() / cols;//15/3=5
 
         int yCoord = 0;
         int i = 0;
         for (int x = 0; x < rows; x++) {
             int xCorod = 0;
             for (int y = 0; y < cols; y++) {
+                //Pictures pic=new Pictures(Bitmap.createBitmap(scaledBitmap, xCorod, yCoord, chunkWidth, chunkHeight), i);
                 chunkedImages.add(new Pictures(Bitmap.createBitmap(scaledBitmap, xCorod, yCoord, chunkWidth, chunkHeight), i));
                 i++;
                 xCorod += chunkWidth;
